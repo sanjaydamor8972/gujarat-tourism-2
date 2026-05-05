@@ -37,13 +37,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img 
-              src="/images/gujarat-logo.png" 
-              alt="Gujarat Tourism" 
-              className="h-10 w-auto"
-              onError={(e) => e.target.src = 'https://via.placeholder.com/40x40?text=GT'}
-            />
-            <span className="text-xl font-bold text-primary-600 dark:text-primary-400">
+            <span className="text-xl font-bold text-orange-600 dark:text-orange-400">
               Gujarat Tourism
             </span>
           </Link>
@@ -54,7 +48,7 @@ const Navbar = () => {
               <Link
                 key={link.to}
                 to={link.to}
-                className="text-gray-700 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors duration-200"
+                className="text-gray-700 dark:text-gray-300 hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -74,12 +68,10 @@ const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="flex items-center space-x-2 focus:outline-none"
                 >
-                  <img
-                    src={user?.avatar || 'https://via.placeholder.com/40'}
-                    alt={user?.name}
-                    className="w-8 h-8 rounded-full object-cover"
-                  />
-                  <span className="text-gray-700 dark:text-gray-300">{user?.name}</span>
+                  <div className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white font-semibold">
+                    {user?.name?.charAt(0) || 'U'}
+                  </div>
+                  <span className="text-gray-700 dark:text-gray-300">{user?.name?.split(' ')[0]}</span>
                 </button>
                 
                 <AnimatePresence>
@@ -125,10 +117,10 @@ const Navbar = () => {
               </div>
             ) : (
               <div className="flex items-center space-x-4">
-                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-primary-600">
+                <Link to="/login" className="text-gray-700 dark:text-gray-300 hover:text-orange-600">
                   Login
                 </Link>
-                <Link to="/register" className="btn-primary py-1 px-4">
+                <Link to="/register" className="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg transition-colors">
                   Register
                 </Link>
               </div>
@@ -159,7 +151,7 @@ const Navbar = () => {
                 <Link
                   key={link.to}
                   to={link.to}
-                  className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600"
+                  className="block py-2 text-gray-700 dark:text-gray-300 hover:text-orange-600"
                   onClick={() => setIsOpen(false)}
                 >
                   {link.label}
@@ -171,7 +163,7 @@ const Navbar = () => {
                     <Link
                       key={link.to}
                       to={link.to}
-                      className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600"
+                      className="block py-2 text-gray-700 dark:text-gray-300 hover:text-orange-600"
                       onClick={() => setIsOpen(false)}
                     >
                       {link.label}
@@ -180,7 +172,7 @@ const Navbar = () => {
                   {isAdmin && (
                     <Link
                       to="/admin"
-                      className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600"
+                      className="block py-2 text-gray-700 dark:text-gray-300 hover:text-orange-600"
                       onClick={() => setIsOpen(false)}
                     >
                       Admin Dashboard
@@ -197,14 +189,14 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/login"
-                    className="block py-2 text-gray-700 dark:text-gray-300 hover:text-primary-600"
+                    className="block py-2 text-gray-700 dark:text-gray-300 hover:text-orange-600"
                     onClick={() => setIsOpen(false)}
                   >
                     Login
                   </Link>
                   <Link
                     to="/register"
-                    className="block py-2 text-primary-600 font-semibold"
+                    className="block py-2 text-orange-600 font-semibold"
                     onClick={() => setIsOpen(false)}
                   >
                     Register

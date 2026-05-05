@@ -1,0 +1,3 @@
+# Create .gitkeep files to preserve folders
+echo "" > client/src/assets/images/.gitkeep
+echo "" > client/src/assets/icons/.gitkeep

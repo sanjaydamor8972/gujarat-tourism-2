@@ -70,21 +70,21 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2">
                 <FiCalendar /> Travel Date
               </label>
               <DatePicker
                 selected={formData.travelDate}
                 onChange={(date) => setFormData({ ...formData, travelDate: date })}
                 minDate={new Date()}
-                className="input-field"
+                className="input-field w-full"
                 dateFormat="MMMM d, yyyy"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2">
                 <FiUsers /> Number of People
               </label>
               <input
@@ -93,34 +93,34 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
                 max="50"
                 value={formData.totalPeople}
                 onChange={(e) => setFormData({ ...formData, totalPeople: parseInt(e.target.value) })}
-                className="input-field"
+                className="input-field w-full"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2">
                 <FiPhone /> Contact Number
               </label>
               <input
                 type="tel"
                 value={formData.contactNumber}
                 onChange={(e) => setFormData({ ...formData, contactNumber: e.target.value })}
-                className="input-field"
+                className="input-field w-full"
                 placeholder="Your phone number"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              <label className="flex items-center gap-2 text-sm font-medium mb-2">
                 <FiMessageSquare /> Special Requests (Optional)
               </label>
               <textarea
                 rows="3"
                 value={formData.specialRequests}
                 onChange={(e) => setFormData({ ...formData, specialRequests: e.target.value })}
-                className="input-field"
+                className="input-field w-full"
                 placeholder="Any special requirements or preferences?"
               />
             </div>
@@ -143,7 +143,7 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
             <button
               type="submit"
               disabled={loading}
-              className="btn-primary w-full"
+              className="btn-primary w-full py-2 px-4"
             >
               {loading ? 'Processing...' : 'Confirm Booking'}
             </button>

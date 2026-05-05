@@ -117,7 +117,7 @@ const PlacePage = () => {
                     <img
                       src={image.url}
                       alt={`${place.title} - ${index + 1}`}
-                      className="w-full h-[500px] object-cover"
+                      className="w-full h-125 object-cover"
                     />
                   </SwiperSlide>
                 ))}

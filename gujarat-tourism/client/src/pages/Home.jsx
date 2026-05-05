@@ -73,7 +73,7 @@ const Home = () => {
         autoplay={{ delay: 5000, disableOnInteraction: false }}
         pagination={{ clickable: true }}
         navigation
-        className="h-[600px]"
+        className="h-150"
       >
         {heroSlides.map((slide, index) => (
           <SwiperSlide key={index}>
@@ -207,7 +207,7 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-gradient-to-r from-primary-600 to-secondary-600 py-16">
+      <div className="bg-linear-to-r from-primary-600 to-secondary-600 py-16">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -1,59 +1,70 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { AuthContext } from './AuthContext';
-import API from '../services/api';
+import React, { createContext, useState, useEffect, useContext } from 'react'
+import api from '../services/api'
+import { useAuth } from './AuthContext'
+import toast from 'react-hot-toast'
 
-export const FavoritesContext = createContext();
+const FavoritesContext = createContext()
+
+export const useFavorites = () => {
+  const context = useContext(FavoritesContext)
+  if (!context) {
+    throw new Error('useFavorites must be used within a FavoritesProvider')
+  }
+  return context
+}
 
 export const FavoritesProvider = ({ children }) => {
-  const { user } = useContext(AuthContext);
-  const [favorites, setFavorites] = useState([]);
+  const [favorites, setFavorites] = useState([])
+  const { isAuthenticated } = useAuth()
 
   useEffect(() => {
-    if (user) {
-      fetchFavorites();
+    if (isAuthenticated) {
+      fetchFavorites()
     } else {
-      setFavorites([]);
+      setFavorites([])
     }
-  }, [user]);
+  }, [isAuthenticated])
 
   const fetchFavorites = async () => {
     try {
-      const { data } = await API.get('/users/favorites');
-      setFavorites(data);
+      const response = await api.get('/users/favorites')
+      setFavorites(response.data)
     } catch (error) {
-      console.error('Failed to fetch favorites:', error);
+      console.error('Failed to fetch favorites:', error)
     }
-  };
+  }
 
-  const addToFavorites = async (placeId) => {
-    try {
-      const { data } = await API.post('/users/favorites', { placeId });
-      setFavorites(data);
-      return true;
-    } catch (error) {
-      console.error('Failed to add to favorites:', error);
-      return false;
+  const toggleFavorite = async (placeId) => {
+    if (!isAuthenticated) {
+      toast.error('Please login to add favorites')
+      return false
     }
-  };
 
-  const removeFromFavorites = async (placeId) => {
     try {
-      const { data } = await API.delete(`/users/favorites/${placeId}`);
-      setFavorites(data);
-      return true;
+      const response = await api.post(`/users/favorites/${placeId}`)
+      await fetchFavorites()
+      toast.success(response.data.message)
+      return true
     } catch (error) {
-      console.error('Failed to remove from favorites:', error);
-      return false;
+      toast.error('Failed to update favorites')
+      return false
     }
-  };
+  }
 
   const isFavorite = (placeId) => {
-    return favorites.some(fav => fav.place._id === placeId);
-  };
+    return favorites.some(place => place._id === placeId)
+  }
 
   return (
-    <FavoritesContext.Provider value={{ favorites, addToFavorites, removeFromFavorites, isFavorite, fetchFavorites }}>
+    <FavoritesContext.Provider value={{
+      favorites,
+      toggleFavorite,
+      isFavorite,
+      fetchFavorites,
+    }}>
       {children}
     </FavoritesContext.Provider>
-  );
-};
+  )
+}
+
+export { FavoritesContext }
