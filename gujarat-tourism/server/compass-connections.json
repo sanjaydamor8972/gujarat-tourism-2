@@ -1,0 +1,24 @@
+{
+  "type": "Compass Connections",
+  "version": {
+    "$numberInt": "1"
+  },
+  "connections": [
+    {
+      "id": "c9615845-c5e3-431e-80f5-933cc65dcdf1",
+      "lastUsed": {
+        "$date": {
+          "$numberLong": "1778048218640"
+        }
+      },
+      "favorite": {
+        "name": "gujarat-vision"
+      },
+      "savedConnectionType": "favorite",
+      "connectionOptions": {
+        "connectionString": "mongodb://localhost:27017/?directConnection=true",
+        "oidc": {}
+      }
+    }
+  ]
+}
