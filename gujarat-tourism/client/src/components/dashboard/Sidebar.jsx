@@ -19,7 +19,7 @@ const Sidebar = () => {
     <div className="w-64 bg-gray-900 text-white h-screen fixed left-0 top-0 overflow-y-auto">
       <div className="p-6">
         <h2 className="text-2xl font-bold text-primary-400">Admin Panel</h2>
-        <p className="text-gray-400 text-sm mt-1">Gujarat Tourism</p>
+        <p className="text-gray-400 text-sm mt-1">Gujarat Vision</p>
       </div>
       
       <nav className="mt-6">

@@ -43,10 +43,10 @@ const Home = () => {
   }, [])
 
   const stats = [
-    { icon: FiMapPin, value: '50+', label: 'Tourist Places' },
-    { icon: FiUsers, value: '100K+', label: 'Happy Visitors' },
-    { icon: FiCamera, value: '500+', label: 'Photo Spots' },
-    { icon: FiAward, value: '10+', label: 'Awards Won' },
+    { icon: FiMapPin, value: '15+', label: 'Tourist Places' },
+    { icon: FiUsers, value: '10+', label: 'Happy Visitors' },
+    { icon: FiCamera, value: '50+', label: 'Photo Spots' },
+    { icon: FiAward, value: '0', label: 'Awards Won' },
   ]
 
   const heroSlides = [
@@ -213,7 +213,7 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="gradient-hero bg-gradient-to-r from-primary-600 to-secondary-700 py-16">
+      <div className="gradient-hero bg-linear-to-r from-primary-600 to-secondary-700 py-16">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

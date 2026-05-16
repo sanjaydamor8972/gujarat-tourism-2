@@ -10,7 +10,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h3 className="text-xl font-bold mb-4 text-primary-600 dark:text-orange-400">
-              Gujarat Tourism
+              Gujarat vision
             </h3>
             <p className="text-gray-600 dark:text-gray-400">
               Experience the vibrant culture, rich heritage, and breathtaking landscapes of Gujarat.
@@ -43,10 +43,10 @@ const Footer = () => {
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Contact Info</h3>
-            <p className="text-gray-600 dark:text-gray-400">Block No. 11, 3rd Floor, Udyog Bhavan</p>
-            <p className="text-gray-600 dark:text-gray-400">Gandhinagar, Gujarat - 382010</p>
+            <p className="text-gray-600 dark:text-gray-400">L.D. college of engineering</p>
+            <p className="text-gray-600 dark:text-gray-400">Ahemdabad, Gujarat - 380054</p>
             <p className="text-gray-600 dark:text-gray-400 mt-2">📞 +91 79 2325 7676</p>
-            <p className="text-gray-600 dark:text-gray-400">✉️ info@gujarattourism.com</p>
+            <p className="text-gray-600 dark:text-gray-400">✉️ info@gujaratvision.com</p>
           </div>
           <div>
             <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Follow Us</h3>
@@ -64,7 +64,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="border-t border-gray-200 dark:border-gray-800 mt-8 pt-8 text-center text-gray-500 dark:text-gray-400">
-          <p>&copy; {currentYear} Gujarat Tourism. All rights reserved.</p>
+          <p>&copy; {currentYear} Gujarat Vision. All rights reserved.</p>
         </div>
       </div>
     </footer>

@@ -24,7 +24,7 @@ function buildPlace(slug, fields) {
 
 export const DEMO_PLACES = [
   buildPlace('statue-of-unity', {
-    title: 'Statue of Unity',
+    title: 'statue of Unity',
     shortDescription: "World's tallest statue dedicated to Sardar Patel.",
     description: 'The Statue of Unity stands at 182 meters on the Narmada riverbank.',
     location: 'Kevadia, Narmada District',
@@ -142,7 +142,7 @@ export const DEMO_PLACES = [
     price: 700,
     isFeatured: false,
     isPopular: true,
-  }),
+  })
 ]
 
 export function getDemoFeaturedPlaces() {

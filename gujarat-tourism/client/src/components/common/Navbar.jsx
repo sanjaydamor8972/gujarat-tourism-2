@@ -38,7 +38,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <span className="text-xl font-bold text-orange-600 dark:text-orange-400">
-              Gujarat Tourism
+              Gujarat Vision
             </span>
           </Link>
 

@@ -70,7 +70,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <div className="gradient-hero bg-gradient-to-r from-primary-600 to-secondary-700 py-16">
+      <div className="gradient-hero bg-linear-to-r from-primary-600 to-secondary-700 py-16">
         <div className="container-custom text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}

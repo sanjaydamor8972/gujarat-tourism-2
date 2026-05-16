@@ -6,10 +6,10 @@ import { PLACE_IMAGE_CATALOG } from '../data/placeImageCatalog'
 
 const About = () => {
   const stats = [
-    { icon: FiMap, value: '50+', label: 'Tourist Destinations' },
-    { icon: FiUsers, value: '100K+', label: 'Happy Travelers' },
-    { icon: FiAward, value: '25+', label: 'Awards Received' },
-    { icon: FiGlobe, value: '15+', label: 'International Awards' },
+    { icon: FiMap, value: '15+', label: 'Tourist Destinations' },
+    { icon: FiUsers, value: '10+', label: 'Happy Travelers' },
+    { icon: FiAward, value: '0', label: 'Awards Received' },
+    { icon: FiGlobe, value: '0', label: 'International Awards' },
   ]
 
   const values = [
@@ -37,43 +37,38 @@ const About = () => {
 
   const team = [
     {
-      name: 'Rajesh Patel',
-      role: 'Tourism Director',
+      name: 'Sanjay Damor',
+      role: 'Developer',
       image: 'https://randomuser.me/api/portraits/men/1.jpg',
-      bio: '20+ years in tourism industry'
+      bio: '1 year in tourism industry'
     },
     {
-      name: 'Priya Sharma',
-      role: 'Senior Travel Consultant',
+      name: 'Akash chauhan',
+      role: 'Developer',
       image: 'https://randomuser.me/api/portraits/women/2.jpg',
       bio: 'Expert in cultural tourism'
     },
     {
-      name: 'Amit Kumar',
+      name: 'Ansh Tripathi',
       role: 'Operations Head',
       image: 'https://randomuser.me/api/portraits/men/3.jpg',
       bio: 'Ensuring smooth travel experiences'
-    },
-    {
-      name: 'Neha Mehta',
-      role: 'Customer Experience',
-      image: 'https://randomuser.me/api/portraits/women/4.jpg',
-      bio: 'Dedicated to customer satisfaction'
     }
+
   ]
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section - FIXED: removed h-[400px] and bg-gradient-to-r */}
-      <div className="gradient-hero relative min-h-[22rem] bg-gradient-to-r from-primary-600 to-secondary-700">
+      <div className="gradient-hero relative min-h-88 bg-linear-to-r from-primary-600 to-secondary-700">
         <div className="absolute inset-0 bg-black/40" aria-hidden />
-        <div className="relative z-10 flex min-h-[22rem] items-center justify-center py-16 text-center">
+        <div className="relative z-10 flex min-h-88 items-center justify-center py-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             className="container-custom"
           >
-            <h1 className="text-5xl md:text-6xl font-bold mb-4">About Gujarat Tourism</h1>
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">About Gujarat Vision</h1>
             <p className="text-xl md:text-2xl max-w-3xl mx-auto">
               Discover the vibrant culture, rich heritage, and warm hospitality of Gujarat
             </p>
@@ -112,7 +107,7 @@ const About = () => {
             <h2 className="text-3xl font-bold mb-4">Our Story</h2>
             <div className="w-20 h-1 bg-primary-600 mb-6"></div>
             <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
-              Gujarat Tourism is dedicated to showcasing the incredible diversity and rich cultural heritage 
+              Gujarat vision is dedicated to showcasing the incredible diversity and rich cultural heritage 
               of Gujarat - a land of vibrant festivals, ancient temples, wildlife sanctuaries, and stunning landscapes.
             </p>
             <p className="text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">
@@ -208,7 +203,7 @@ const About = () => {
       </div>
 
       {/* CTA Section - FIXED: changed bg-gradient-to-r to bg-gradient-to-r */}
-      <div className="gradient-hero bg-gradient-to-r from-primary-600 to-secondary-700 py-16">
+      <div className="gradient-hero bg-linear-to-r from-primary-600 to-secondary-700 py-16">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
