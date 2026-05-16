@@ -1,14 +1,16 @@
 import { Navigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import Loader from '../components/common/Loader'
 
-const PrivateRoute = ({ children }) => {
-  const token = localStorage.getItem('token')
-  
-  // If user is not logged in, redirect to login page
-  if (!token) {
+function PrivateRoute({ children }) {
+  const { isAuthenticated, loading } = useAuth()
+
+  if (loading) return <Loader />
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />
   }
-  
-  // If user is logged in, show the protected page
+
   return children
 }
 

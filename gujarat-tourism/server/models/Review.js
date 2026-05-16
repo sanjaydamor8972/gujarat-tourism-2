@@ -11,6 +11,10 @@ const reviewSchema = new mongoose.Schema({
     ref: 'Place',
     required: true,
   },
+  title: {
+    type: String,
+    default: '',
+  },
   rating: {
     type: Number,
     required: true,

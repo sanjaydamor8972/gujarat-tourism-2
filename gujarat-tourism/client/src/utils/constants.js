@@ -63,7 +63,13 @@ export const API_ENDPOINTS = {
   BOOKINGS: {
     CREATE: '/bookings',
     GET_USER: '/bookings/user',
-    CANCEL: (id) => `/bookings/${id}`,
+    GET_ALL: '/bookings/all',
+    CANCEL: (id) => `/bookings/${id}/cancel`,
+  },
+  USERS: {
+    FAVORITES: '/users/favorites',
+    TOGGLE_FAVORITE: (placeId) => `/users/favorites/${placeId}`,
+    GET_ALL: '/users',
   },
   REVIEWS: {
     CREATE: '/reviews',
@@ -75,7 +81,7 @@ export const API_ENDPOINTS = {
 export const STORAGE_KEYS = {
   TOKEN: 'token',
   USER: 'user',
-  THEME: 'theme',
+  DARK_MODE: 'darkMode',
 }
 
 // Default pagination

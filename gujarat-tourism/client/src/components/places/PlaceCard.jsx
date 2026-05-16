@@ -3,11 +3,10 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { FiStar, FiMapPin, FiHeart } from 'react-icons/fi'
 import { useFavorites } from '../../context/FavoritesContext'
-import { useAuth } from '../../context/AuthContext'
+import PlaceImage from '../common/PlaceImage'
 
 const PlaceCard = ({ place }) => {
   const { isFavorite, toggleFavorite } = useFavorites()
-  const { isAuthenticated } = useAuth()
   const favorite = isFavorite(place._id)
 
   return (
@@ -20,8 +19,8 @@ const PlaceCard = ({ place }) => {
     >
       <Link to={`/places/${place.slug || place._id}`}>
         <div className="relative overflow-hidden h-48">
-          <img
-            src={place.coverImage?.url || place.images[0]?.url || 'https://via.placeholder.com/400x300?text=Gujarat'}
+          <PlaceImage
+            place={place}
             alt={place.title}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
@@ -34,7 +33,7 @@ const PlaceCard = ({ place }) => {
               className="bg-white dark:bg-gray-800 p-2 rounded-full shadow-lg hover:scale-110 transition-transform"
             >
               <FiHeart
-                className={`${favorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`}
+                className={`${favorite ? 'fill-red-500 text-red-500' : 'text-gray-600 dark:text-gray-300'}`}
                 size={18}
               />
             </button>
@@ -50,7 +49,7 @@ const PlaceCard = ({ place }) => {
             <div className="flex items-center space-x-1 text-yellow-500">
               <FiStar className="fill-current" size={16} />
               <span className="text-sm font-semibold">{place.rating || 0}</span>
-              <span className="text-gray-500 text-sm">({place.totalReviews || 0})</span>
+              <span className="text-gray-500 text-sm">({place.totalReviews ?? place.numReviews ?? 0})</span>
             </div>
             <span className="text-xs bg-primary-100 dark:bg-primary-900 text-primary-700 dark:text-primary-300 px-2 py-1 rounded-full">
               {place.category}
@@ -68,7 +67,7 @@ const PlaceCard = ({ place }) => {
           </p>
           <div className="mt-3 flex items-center justify-between">
             <span className="text-primary-600 dark:text-primary-400 font-bold">
-              ₹{place.pricePerPerson}
+              ₹{place.pricePerPerson ?? place.price ?? 0}
             </span>
             <span className="text-gray-500 text-xs">per person</span>
           </div>

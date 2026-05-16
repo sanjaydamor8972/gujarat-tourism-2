@@ -2,6 +2,7 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { FiMap, FiUsers, FiAward, FiGlobe, FiHeart, FiCamera, FiCompass, FiSun } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
+import { PLACE_IMAGE_CATALOG } from '../data/placeImageCatalog'
 
 const About = () => {
   const stats = [
@@ -64,9 +65,9 @@ const About = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section - FIXED: removed h-[400px] and bg-gradient-to-r */}
-      <div className="relative h-100 bg-linear-to-r from-primary-600 to-secondary-600">
-        <div className="absolute inset-0 bg-black opacity-50"></div>
-        <div className="relative h-full flex items-center justify-center text-center text-white">
+      <div className="gradient-hero relative min-h-[22rem] bg-gradient-to-r from-primary-600 to-secondary-700">
+        <div className="absolute inset-0 bg-black/40" aria-hidden />
+        <div className="relative z-10 flex min-h-[22rem] items-center justify-center py-16 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -129,7 +130,7 @@ const About = () => {
             className="relative"
           >
             <img
-              src="https://images.unsplash.com/photo-1587474260584-136574528ed5?w=600"
+              src={PLACE_IMAGE_CATALOG['statue-of-unity'].cover}
               alt="Gujarat Tourism"
               className="rounded-2xl shadow-xl"
             />
@@ -206,8 +207,8 @@ const About = () => {
         </div>
       </div>
 
-      {/* CTA Section - FIXED: changed bg-gradient-to-r to bg-linear-to-r */}
-      <div className="bg-linear-to-r from-primary-600 to-secondary-600 py-16">
+      {/* CTA Section - FIXED: changed bg-gradient-to-r to bg-gradient-to-r */}
+      <div className="gradient-hero bg-gradient-to-r from-primary-600 to-secondary-700 py-16">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

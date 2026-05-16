@@ -7,6 +7,9 @@ import { Link } from 'react-router-dom'
 import PlaceCard from '../components/places/PlaceCard'
 import Loader from '../components/common/Loader'
 import placeService from '../services/placeService'
+import { getDemoFeaturedPlaces, getDemoPopularPlaces } from '../data/demoPlaces'
+import { PLACE_IMAGE_CATALOG } from '../data/placeImageCatalog'
+import toast from 'react-hot-toast'
 
 // Import Swiper styles
 import 'swiper/css'
@@ -29,6 +32,9 @@ const Home = () => {
         setPopularPlaces(popular)
       } catch (error) {
         console.error('Error fetching data:', error)
+        setFeaturedPlaces(getDemoFeaturedPlaces())
+        setPopularPlaces(getDemoPopularPlaces())
+        toast('Showing sample destinations — server unavailable', { icon: 'ℹ️' })
       } finally {
         setLoading(false)
       }
@@ -45,17 +51,17 @@ const Home = () => {
 
   const heroSlides = [
     {
-      image: 'https://images.unsplash.com/photo-1587474260584-136574528ed5?w=1600',
+      image: PLACE_IMAGE_CATALOG['statue-of-unity'].cover,
       title: 'Statue of Unity',
-      subtitle: 'World\'s Tallest Statue',
+      subtitle: "World's Tallest Statue",
     },
     {
-      image: 'https://images.unsplash.com/photo-1587925358603-c2eea5305bbc?w=1600',
+      image: PLACE_IMAGE_CATALOG['rann-of-kutch'].cover,
       title: 'Rann of Kutch',
       subtitle: 'White Desert Festival',
     },
     {
-      image: 'https://images.unsplash.com/photo-1566577134774-4fa5a90f2a6b?w=1600',
+      image: PLACE_IMAGE_CATALOG['gir-national-park'].cover,
       title: 'Gir National Park',
       subtitle: 'Home of Asiatic Lions',
     },
@@ -83,8 +89,8 @@ const Home = () => {
                 alt={slide.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-                <div className="text-center text-white">
+              <div className="gradient-hero absolute inset-0 bg-black/40 flex items-center justify-center">
+                <div className="text-center">
                   <motion.h1
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -207,7 +213,7 @@ const Home = () => {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-linear-to-r from-primary-600 to-secondary-600 py-16">
+      <div className="gradient-hero bg-gradient-to-r from-primary-600 to-secondary-700 py-16">
         <div className="container-custom text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

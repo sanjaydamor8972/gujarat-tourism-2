@@ -16,6 +16,8 @@ import reviewService from '../services/reviewService'
 import { useFavorites } from '../context/FavoritesContext'
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
+import { getPlaceGallery } from '../utils/placeImages'
+import PlaceImage from '../components/common/PlaceImage'
 
 const PlacePage = () => {
   const { id } = useParams()
@@ -44,7 +46,7 @@ const PlacePage = () => {
         reviewService.getPlaceReviews(id, { page: 1, limit: 10 })
       ])
       setPlace(placeData)
-      setReviews(reviewsData.reviews)
+      setReviews(Array.isArray(reviewsData) ? reviewsData : reviewsData.reviews || [])
     } catch (error) {
       console.error('Error fetching place data:', error)
       toast.error('Failed to load place details')
@@ -87,6 +89,10 @@ const PlacePage = () => {
   }
 
   if (loading) return <Loader />
+  if (!place) return null
+
+  const gallery = getPlaceGallery(place)
+  const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -112,10 +118,12 @@ const PlacePage = () => {
                 navigation
                 className="mb-4 rounded-lg overflow-hidden"
               >
-                {place.images.map((image, index) => (
+                {gallery.map((url, index) => (
                   <SwiperSlide key={index}>
-                    <img
-                      src={image.url}
+                    <PlaceImage
+                      src={url}
+                      place={place}
+                      index={index}
                       alt={`${place.title} - ${index + 1}`}
                       className="w-full h-125 object-cover"
                     />
@@ -129,10 +137,12 @@ const PlacePage = () => {
                 slidesPerView={4}
                 className="h-24"
               >
-                {place.images.map((image, index) => (
+                {gallery.map((url, index) => (
                   <SwiperSlide key={index}>
-                    <img
-                      src={image.url}
+                    <PlaceImage
+                      src={url}
+                      place={place}
+                      index={index}
                       alt={`Thumb ${index + 1}`}
                       className="w-full h-20 object-cover rounded cursor-pointer"
                     />
@@ -164,10 +174,10 @@ const PlacePage = () => {
                   <div className="flex items-center gap-1">
                     <FiStar className="text-yellow-500 fill-current" />
                     <span className="font-semibold">{place.rating}</span>
-                    <span className="text-gray-500">({place.totalReviews} reviews)</span>
+                    <span className="text-gray-500">({place.totalReviews ?? place.numReviews ?? 0} reviews)</span>
                   </div>
                   <div className="text-2xl font-bold text-primary-600">
-                    ₹{place.pricePerPerson}
+                    ₹{place.pricePerPerson ?? place.price ?? 0}
                     <span className="text-sm font-normal text-gray-500">/person</span>
                   </div>
                 </div>
@@ -229,15 +239,17 @@ const PlacePage = () => {
           {/* Map */}
           <div>
             <h3 className="text-xl font-semibold mb-3">Location Map</h3>
-            <LoadScript googleMapsApiKey={import.meta.env.VITE_GOOGLE_MAPS_API_KEY}>
-              <GoogleMap
-                mapContainerStyle={mapContainerStyle}
-                center={center}
-                zoom={13}
-              >
-                <Marker position={center} />
-              </GoogleMap>
-            </LoadScript>
+            {mapsApiKey ? (
+              <LoadScript googleMapsApiKey={mapsApiKey}>
+                <GoogleMap mapContainerStyle={mapContainerStyle} center={center} zoom={13}>
+                  <Marker position={center} />
+                </GoogleMap>
+              </LoadScript>
+            ) : (
+              <div className="h-[400px] bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-500 p-4 text-center">
+                Map unavailable — add VITE_GOOGLE_MAPS_API_KEY
+              </div>
+            )}
           </div>
         </div>
       </div>

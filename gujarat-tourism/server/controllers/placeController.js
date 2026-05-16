@@ -1,67 +1,63 @@
-import Place from "../models/Place.js";
-import { cloudinary } from "../config/cloudinary.js";
+import Place from '../models/Place.js';
+import { cloudinary } from '../config/cloudinary.js';
+import { normalizePlace, normalizePlaces } from '../utils/normalizePlace.js';
+import { uploadImageFile } from '../utils/uploadImage.js';
 
-// @desc    Get all places with filtering
-// @route   GET /api/places
-// @access  Public
 const getPlaces = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 9;
     const startIndex = (page - 1) * limit;
-    
+
     let query = {};
-    
-    // Search
+
     if (req.query.search) {
       query.$or = [
-        { title: { $regex: req.query.search, $options: "i" } },
-        { description: { $regex: req.query.search, $options: "i" } },
-        { location: { $regex: req.query.search, $options: "i" } },
+        { title: { $regex: req.query.search, $options: 'i' } },
+        { description: { $regex: req.query.search, $options: 'i' } },
+        { location: { $regex: req.query.search, $options: 'i' } },
+        { shortDescription: { $regex: req.query.search, $options: 'i' } },
       ];
     }
-    
-    // Filter by category
-    if (req.query.category && req.query.category !== "all") {
-      query.category = req.query.category;
+
+    if (req.query.category && req.query.category !== 'all') {
+      const cat = req.query.category.toLowerCase();
+      const alt = cat.replace('_', ' ');
+      query.$and = query.$and || [];
+      query.$and.push({
+        $or: [
+          { category: { $regex: new RegExp(`^${cat}$`, 'i') } },
+          { category: { $regex: new RegExp(`^${alt}$`, 'i') } },
+        ],
+      });
     }
-    
-    // Filter by district
-    if (req.query.district && req.query.district !== "all") {
-      query.district = req.query.district;
+
+    if (req.query.district && req.query.district !== 'all') {
+      query.district = { $regex: req.query.district, $options: 'i' };
     }
-    
-    // Featured places
-    if (req.query.featured === "true") {
+
+    if (req.query.featured === 'true') {
       query.isFeatured = true;
     }
-    
-    // Popular places
-    if (req.query.popular === "true") {
+
+    if (req.query.popular === 'true') {
       query.isPopular = true;
     }
-    
-    // Sorting
+
     let sort = {};
-    if (req.query.sort === "rating") {
+    if (req.query.sort === 'rating') {
       sort.rating = -1;
-    } else if (req.query.sort === "newest") {
-      sort.createdAt = -1;
-    } else if (req.query.sort === "oldest") {
+    } else if (req.query.sort === 'oldest') {
       sort.createdAt = 1;
     } else {
       sort.createdAt = -1;
     }
-    
-    const places = await Place.find(query)
-      .sort(sort)
-      .limit(limit)
-      .skip(startIndex);
-    
+
+    const places = await Place.find(query).sort(sort).limit(limit).skip(startIndex).lean();
     const total = await Place.countDocuments(query);
-    
+
     res.json({
-      places,
+      places: normalizePlaces(places),
       page,
       totalPages: Math.ceil(total / limit),
       total,
@@ -71,33 +67,26 @@ const getPlaces = async (req, res) => {
   }
 };
 
-// @desc    Get single place by slug or id
-// @route   GET /api/places/:id
-// @access  Public
 const getPlaceById = async (req, res) => {
   try {
     let place;
-    
-    // Check if param is slug or id
+
     if (req.params.id.match(/^[0-9a-fA-F]{24}$/)) {
       place = await Place.findById(req.params.id);
     } else {
       place = await Place.findOne({ slug: req.params.id });
     }
-    
+
     if (place) {
-      res.json(place);
+      res.json(normalizePlace(place));
     } else {
-      res.status(404).json({ message: "Place not found" });
+      res.status(404).json({ message: 'Place not found' });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Create a place
-// @route   POST /api/places
-// @access  Private/Admin
 const createPlace = async (req, res) => {
   try {
     const {
@@ -114,202 +103,201 @@ const createPlace = async (req, res) => {
       mapLocation,
       nearbyAttractions,
     } = req.body;
-    
+
+    const price = Number(pricePerPerson) || 0;
+    const defaultCover = {
+      url: 'https://images.unsplash.com/photo-1631983097767-099c77bf880d?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+      publicId: 'placeholder',
+      caption: '',
+    };
+
     const place = await Place.create({
       title,
       description,
-      shortDescription,
+      shortDescription: shortDescription || description?.slice(0, 120) || '',
       location,
-      district,
-      category,
-      pricePerPerson,
-      bestTimeToVisit: bestTimeToVisit || "",
-      visitingHours: visitingHours || "",
-      entryFee: entryFee || "Free",
-      mapLocation: mapLocation || { lat: 0, lng: 0 },
+      district: district || '',
+      category: (category || 'other').toLowerCase(),
+      pricePerPerson: price,
+      price,
+      bestTimeToVisit: bestTimeToVisit || '',
+      visitingHours: visitingHours || '',
+      entryFee: entryFee || 'Free',
+      mapLocation: mapLocation || { lat: 23.0225, lng: 72.5714 },
       nearbyAttractions: nearbyAttractions || [],
-      coverImage: {
-        url: "https://via.placeholder.com/800x600?text=Gujarat+Tourism",
-        publicId: "placeholder",
-      },
-      images: [],
+      coverImage: defaultCover,
+      images: [defaultCover],
     });
-    
-    res.status(201).json(place);
+
+    res.status(201).json(normalizePlace(place));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// @desc    Update a place
-// @route   PUT /api/places/:id
-// @access  Private/Admin
 const updatePlace = async (req, res) => {
   try {
     const place = await Place.findById(req.params.id);
-    
+
     if (!place) {
-      return res.status(404).json({ message: "Place not found" });
+      return res.status(404).json({ message: 'Place not found' });
     }
-    
-    place.title = req.body.title || place.title;
-    place.description = req.body.description || place.description;
-    place.shortDescription = req.body.shortDescription || place.shortDescription;
-    place.location = req.body.location || place.location;
-    place.district = req.body.district || place.district;
-    place.category = req.body.category || place.category;
-    place.pricePerPerson = req.body.pricePerPerson || place.pricePerPerson;
-    place.bestTimeToVisit = req.body.bestTimeToVisit || place.bestTimeToVisit;
-    place.visitingHours = req.body.visitingHours || place.visitingHours;
-    place.entryFee = req.body.entryFee || place.entryFee;
-    place.mapLocation = req.body.mapLocation || place.mapLocation;
-    place.nearbyAttractions = req.body.nearbyAttractions || place.nearbyAttractions;
-    place.isPopular = req.body.isPopular !== undefined ? req.body.isPopular : place.isPopular;
-    place.isFeatured = req.body.isFeatured !== undefined ? req.body.isFeatured : place.isFeatured;
-    
+
+    const fields = [
+      'title',
+      'description',
+      'shortDescription',
+      'location',
+      'district',
+      'bestTimeToVisit',
+      'visitingHours',
+      'entryFee',
+      'mapLocation',
+      'nearbyAttractions',
+    ];
+
+    fields.forEach((field) => {
+      if (req.body[field] !== undefined) place[field] = req.body[field];
+    });
+
+    if (req.body.category) place.category = req.body.category.toLowerCase();
+    if (req.body.pricePerPerson !== undefined) {
+      place.pricePerPerson = req.body.pricePerPerson;
+      place.price = req.body.pricePerPerson;
+    }
+    if (req.body.isPopular !== undefined) place.isPopular = req.body.isPopular;
+    if (req.body.isFeatured !== undefined) place.isFeatured = req.body.isFeatured;
+
     const updatedPlace = await place.save();
-    res.json(updatedPlace);
+    res.json(normalizePlace(updatedPlace));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// @desc    Delete a place
-// @route   DELETE /api/places/:id
-// @access  Private/Admin
 const deletePlace = async (req, res) => {
   try {
     const place = await Place.findById(req.params.id);
-    
+
     if (!place) {
-      return res.status(404).json({ message: "Place not found" });
+      return res.status(404).json({ message: 'Place not found' });
     }
-    
-    // Delete images from Cloudinary if they exist
-    if (place.coverImage && place.coverImage.publicId && place.coverImage.publicId !== "placeholder") {
-      try {
-        await cloudinary.uploader.destroy(place.coverImage.publicId);
-      } catch (err) {
-        console.log("Cloudinary delete error:", err.message);
-      }
-    }
-    
-    for (const image of place.images) {
-      if (image.publicId && image.publicId !== "placeholder") {
+
+    const destroyIfCloudinary = async (publicId) => {
+      if (publicId && !publicId.startsWith('local_') && publicId !== 'placeholder') {
         try {
-          await cloudinary.uploader.destroy(image.publicId);
+          await cloudinary.uploader.destroy(publicId);
         } catch (err) {
-          console.log("Cloudinary delete error:", err.message);
+          console.log('Cloudinary delete error:', err.message);
         }
       }
+    };
+
+    if (place.coverImage?.publicId) {
+      await destroyIfCloudinary(place.coverImage.publicId);
     }
-    
+
+    for (const image of place.images || []) {
+      if (image.publicId) await destroyIfCloudinary(image.publicId);
+    }
+
     await place.deleteOne();
-    res.json({ message: "Place removed" });
+    res.json({ message: 'Place removed' });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Upload place images
-// @route   POST /api/places/:id/upload
-// @access  Private/Admin
 const uploadPlaceImages = async (req, res) => {
   try {
     const place = await Place.findById(req.params.id);
-    
+
     if (!place) {
-      return res.status(404).json({ message: "Place not found" });
+      return res.status(404).json({ message: 'Place not found' });
     }
-    
+
     if (!req.files || req.files.length === 0) {
-      return res.status(400).json({ message: "No files uploaded" });
+      return res.status(400).json({ message: 'No files uploaded' });
     }
-    
+
     const uploadedImages = [];
-    
     for (const file of req.files) {
-      // Convert buffer to base64
-      const b64 = Buffer.from(file.buffer).toString("base64");
-      const dataURI = `data:${file.mimetype};base64,${b64}`;
-      
-      // Use placeholder if cloudinary not configured
-      const imageUrl = `https://via.placeholder.com/800x600?text=${encodeURIComponent(file.originalname)}`;
-      
-      uploadedImages.push({
-        url: imageUrl,
-        publicId: `local_${Date.now()}_${file.originalname}`,
-        caption: "",
-      });
+      uploadedImages.push(await uploadImageFile(file));
     }
-    
+
     place.images.push(...uploadedImages);
-    
-    // If no cover image, set first image as cover
-    if ((!place.coverImage || place.coverImage.url.includes("placeholder")) && uploadedImages.length > 0) {
+
+    if (
+      !place.coverImage?.url ||
+      place.coverImage.url.includes('placeholder') ||
+      place.coverImage.url.includes('photo-1587474260584')
+    ) {
       place.coverImage = uploadedImages[0];
     }
-    
+
     await place.save();
-    
-    res.json({ message: "Images uploaded successfully", images: uploadedImages });
+
+    res.json({
+      message: 'Images uploaded successfully',
+      images: uploadedImages,
+      place: normalizePlace(place),
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Delete place image
-// @route   DELETE /api/places/:id/images/:imageId
-// @access  Private/Admin
 const deletePlaceImage = async (req, res) => {
   try {
     const place = await Place.findById(req.params.id);
-    
+
     if (!place) {
-      return res.status(404).json({ message: "Place not found" });
+      return res.status(404).json({ message: 'Place not found' });
     }
-    
-    const imageIndex = place.images.findIndex(img => img._id.toString() === req.params.imageId);
-    
+
+    const imageIndex = place.images.findIndex(
+      (img) => img._id.toString() === req.params.imageId
+    );
+
     if (imageIndex === -1) {
-      return res.status(404).json({ message: "Image not found" });
+      return res.status(404).json({ message: 'Image not found' });
     }
-    
+
     place.images.splice(imageIndex, 1);
-    
     await place.save();
-    
-    res.json({ message: "Image deleted successfully" });
+
+    res.json({ message: 'Image deleted successfully', place: normalizePlace(place) });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get featured places for homepage
-// @route   GET /api/places/featured
-// @access  Public
 const getFeaturedPlaces = async (req, res) => {
   try {
-    const places = await Place.find({ isFeatured: true }).limit(6);
-    res.json(places);
+    let places = await Place.find({ isFeatured: true }).limit(6).lean();
+    if (places.length === 0) {
+      places = await Place.find().sort({ rating: -1 }).limit(6).lean();
+    }
+    res.json(normalizePlaces(places));
   } catch (error) {
+    console.error('getFeaturedPlaces error:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Get popular places
-// @route   GET /api/places/popular
-// @access  Public
 const getPopularPlaces = async (req, res) => {
   try {
-    const places = await Place.find({ isPopular: true }).limit(8);
-    res.json(places);
+    let places = await Place.find({ isPopular: true }).limit(8).lean();
+    if (places.length === 0) {
+      places = await Place.find().sort({ rating: -1 }).limit(8).lean();
+    }
+    res.json(normalizePlaces(places));
   } catch (error) {
+    console.error('getPopularPlaces error:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// Export all functions
 export {
   getPlaces,
   getPlaceById,

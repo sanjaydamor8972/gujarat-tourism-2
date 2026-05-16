@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import PlaceCard from '../components/places/PlaceCard'
 import Loader from '../components/common/Loader'
 import placeService from '../services/placeService'
+import useDebounce from '../hooks/useDebounce'
+import { CATEGORIES, DISTRICTS } from '../utils/constants'
+import { getDemoPlacesList } from '../data/demoPlaces'
+import toast from 'react-hot-toast'
 import { FiSearch, FiFilter, FiGrid, FiList, FiX } from 'react-icons/fi'
 
-const Places = () => {
+function Places() {
   const [places, setPlaces] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -17,19 +21,12 @@ const Places = () => {
   const [viewMode, setViewMode] = useState('grid')
   const [showFilters, setShowFilters] = useState(false)
 
-  const categories = [
-    'all', 'temple', 'nature', 'heritage', 'wildlife', 'beach', 'hill_station', 'museum'
-  ]
+  const debouncedSearch = useDebounce(searchTerm, 500)
 
-  const districts = [
-    'all', 'Kutch', 'Ahmedabad', 'Vadodara', 'Surat', 'Rajkot', 'Junagadh', 'Gir Somnath', 'Dwarka'
-  ]
+  const categories = ['all', ...CATEGORIES.map((c) => c.value)]
+  const districts = ['all', ...DISTRICTS.slice(0, 12)]
 
-  useEffect(() => {
-    fetchPlaces()
-  }, [currentPage, selectedCategory, selectedDistrict, sortBy, searchTerm])
-
-  const fetchPlaces = async () => {
+  const fetchPlaces = useCallback(async () => {
     setLoading(true)
     try {
       const params = {
@@ -38,25 +35,32 @@ const Places = () => {
         sort: sortBy,
         category: selectedCategory,
         district: selectedDistrict,
-        search: searchTerm
+        search: debouncedSearch,
       }
       const data = await placeService.getPlaces(params)
       setPlaces(data.places)
       setTotalPages(data.totalPages)
     } catch (error) {
       console.error('Error fetching places:', error)
+      setPlaces(getDemoPlacesList())
+      setTotalPages(1)
+      toast('Showing sample places — server unavailable', { icon: 'ℹ️' })
     } finally {
       setLoading(false)
     }
-  }
+  }, [currentPage, selectedCategory, selectedDistrict, sortBy, debouncedSearch])
 
-  const handleSearch = (e) => {
+  useEffect(() => {
+    fetchPlaces()
+  }, [fetchPlaces])
+
+  function handleSearch(e) {
     e.preventDefault()
     setCurrentPage(1)
     fetchPlaces()
   }
 
-  const clearFilters = () => {
+  function clearFilters() {
     setSelectedCategory('all')
     setSelectedDistrict('all')
     setSortBy('newest')
@@ -67,7 +71,6 @@ const Places = () => {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8">
       <div className="container-custom">
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 dark:text-white mb-2">
             Explore Gujarat
@@ -77,17 +80,19 @@ const Places = () => {
           </p>
         </div>
 
-        {/* Search & Filter Bar */}
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-8">
           <form onSubmit={handleSearch} className="flex flex-col md:flex-row gap-4">
             <div className="flex-1 relative">
-              <FiSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search by name, location, or description..."
                 className="input-field pl-10"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value)
+                  setCurrentPage(1)
+                }}
               />
             </div>
             <div className="flex gap-2">
@@ -105,7 +110,6 @@ const Places = () => {
             </div>
           </form>
 
-          {/* Advanced Filters */}
           <AnimatePresence>
             {showFilters && (
               <motion.div
@@ -120,11 +124,14 @@ const Places = () => {
                     <select
                       className="input-field"
                       value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
+                      onChange={(e) => {
+                        setSelectedCategory(e.target.value)
+                        setCurrentPage(1)
+                      }}
                     >
-                      {categories.map(cat => (
+                      {categories.map((cat) => (
                         <option key={cat} value={cat}>
-                          {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                          {cat === 'all' ? 'All Categories' : cat.replace('_', ' ')}
                         </option>
                       ))}
                     </select>
@@ -134,9 +141,12 @@ const Places = () => {
                     <select
                       className="input-field"
                       value={selectedDistrict}
-                      onChange={(e) => setSelectedDistrict(e.target.value)}
+                      onChange={(e) => {
+                        setSelectedDistrict(e.target.value)
+                        setCurrentPage(1)
+                      }}
                     >
-                      {districts.map(dist => (
+                      {districts.map((dist) => (
                         <option key={dist} value={dist}>
                           {dist === 'all' ? 'All Districts' : dist}
                         </option>
@@ -148,7 +158,10 @@ const Places = () => {
                     <select
                       className="input-field"
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value)}
+                      onChange={(e) => {
+                        setSortBy(e.target.value)
+                        setCurrentPage(1)
+                      }}
                     >
                       <option value="newest">Newest First</option>
                       <option value="oldest">Oldest First</option>
@@ -158,6 +171,7 @@ const Places = () => {
                 </div>
                 <div className="mt-4 flex justify-end">
                   <button
+                    type="button"
                     onClick={clearFilters}
                     className="text-gray-500 hover:text-primary-600 flex items-center gap-1"
                   >
@@ -169,19 +183,18 @@ const Places = () => {
           </AnimatePresence>
         </div>
 
-        {/* View Toggle */}
         <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600 dark:text-gray-400">
-            Found {places.length} places
-          </p>
+          <p className="text-gray-600 dark:text-gray-400">Found {places.length} places</p>
           <div className="flex gap-2">
             <button
+              type="button"
               onClick={() => setViewMode('grid')}
               className={`p-2 rounded ${viewMode === 'grid' ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             >
               <FiGrid />
             </button>
             <button
+              type="button"
               onClick={() => setViewMode('list')}
               className={`p-2 rounded ${viewMode === 'list' ? 'bg-primary-600 text-white' : 'bg-gray-200 dark:bg-gray-700'}`}
             >
@@ -190,38 +203,40 @@ const Places = () => {
           </div>
         </div>
 
-        {/* Places Grid/List */}
         {loading ? (
           <Loader />
         ) : places.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-500 text-lg">No places found. Try different filters.</p>
+            <p className="text-gray-500 dark:text-gray-400 text-lg">No places found. Try different filters.</p>
           </div>
         ) : (
-          <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}>
-            {places.map((place, index) => (
-              <PlaceCard key={place._id} place={place} index={index} />
+          <div
+            className={`grid ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6`}
+          >
+            {places.map((place) => (
+              <PlaceCard key={place._id} place={place} />
             ))}
           </div>
         )}
 
-        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-2 mt-8">
             <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
               disabled={currentPage === 1}
-              className="px-4 py-2 border rounded disabled:opacity-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-50 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800"
             >
               Previous
             </button>
-            <span className="px-4 py-2">
+            <span className="px-4 py-2 text-gray-700 dark:text-gray-300">
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage === totalPages}
-              className="px-4 py-2 border rounded disabled:opacity-50"
+              className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-50 text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-800"
             >
               Next
             </button>

@@ -40,7 +40,7 @@ const AdminDashboard = () => {
     { title: 'Total Bookings', value: stats?.totalBookings || 0, icon: FiCalendar, color: 'bg-purple-500' },
     { title: 'Total Reviews', value: stats?.totalReviews || 0, icon: FiMessageCircle, color: 'bg-yellow-500' },
     { title: 'Total Revenue', value: `₹${analytics?.totalRevenue?.toLocaleString() || 0}`, icon: FiDollarSign, color: 'bg-red-500' },
-    { title: 'Avg Rating', value: '4.5', icon: FiStar, color: 'bg-indigo-500' },
+    { title: 'Avg Rating', value: stats?.avgRating ?? 0, icon: FiStar, color: 'bg-indigo-500' },
   ]
 
   const bookingStatsData = analytics?.bookingStats ? [
@@ -149,7 +149,7 @@ const AdminDashboard = () => {
                     <tr key={index} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <img src={place.coverImage?.url} alt={place.title} className="w-10 h-10 rounded-full object-cover mr-3" />
+                          <img src={place.coverImage?.url || place.place?.coverImage?.url} alt={place.title} className="w-10 h-10 rounded-full object-cover mr-3" />
                           <span className="font-medium">{place.title}</span>
                         </div>
                       </td>

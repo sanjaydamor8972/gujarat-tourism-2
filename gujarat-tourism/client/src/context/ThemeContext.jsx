@@ -10,23 +10,35 @@ export const useTheme = () => {
   return context
 }
 
+function applyTheme(isDark) {
+  const root = document.documentElement
+  if (isDark) {
+    root.classList.add('dark')
+    root.style.colorScheme = 'dark'
+  } else {
+    root.classList.remove('dark')
+    root.style.colorScheme = 'light'
+  }
+}
+
 export const ThemeProvider = ({ children }) => {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode')
-    return saved ? JSON.parse(saved) : false
+    const isDark =
+      saved !== null
+        ? JSON.parse(saved)
+        : window.matchMedia('(prefers-color-scheme: dark)').matches
+    applyTheme(isDark)
+    return isDark
   })
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode))
-    if (darkMode) {
-      document.documentElement.classList.add('dark')
-    } else {
-      document.documentElement.classList.remove('dark')
-    }
+    applyTheme(darkMode)
   }, [darkMode])
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode)
+    setDarkMode((prev) => !prev)
   }
 
   return (

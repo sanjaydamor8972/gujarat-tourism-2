@@ -3,15 +3,14 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { motion } from 'framer-motion'
 import { FiMail, FiLock, FiLogIn } from 'react-icons/fi'
-import toast from 'react-hot-toast'
 
-const Login = () => {
+function Login() {
   const [formData, setFormData] = useState({ email: '', password: '' })
   const [loading, setLoading] = useState(false)
   const { login } = useAuth()
   const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
     const success = await login(formData.email, formData.password)
@@ -20,7 +19,7 @@ const Login = () => {
   }
 
   return (
-   <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-primary-50 to-secondary-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary-50 to-secondary-50 dark:from-gray-900 dark:to-gray-800 py-12 px-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -35,7 +34,7 @@ const Login = () => {
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Email</label>
             <div className="relative">
-              <FiMail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="email"
                 required
@@ -50,7 +49,7 @@ const Login = () => {
           <div>
             <label className="block text-gray-700 dark:text-gray-300 mb-2">Password</label>
             <div className="relative">
-              <FiLock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+              <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
               <input
                 type="password"
                 required
@@ -65,10 +64,10 @@ const Login = () => {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary w-full flex items-center justify-center space-x-2"
+            className="btn-primary w-full flex items-center justify-center gap-2"
           >
             {loading ? (
-              <div className="loader w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <FiLogIn />
@@ -79,7 +78,7 @@ const Login = () => {
         </form>
 
         <p className="text-center mt-6 text-gray-600 dark:text-gray-400">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <Link to="/register" className="text-primary-600 hover:text-primary-700 font-semibold">
             Register
           </Link>

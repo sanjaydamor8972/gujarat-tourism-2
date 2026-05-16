@@ -11,9 +11,14 @@ const bookingSchema = new mongoose.Schema({
     ref: 'Place',
     required: true,
   },
+  bookingReference: {
+    type: String,
+    unique: true,
+    sparse: true,
+  },
   bookingDate: {
     type: Date,
-    required: true,
+    default: Date.now,
   },
   visitDate: {
     type: Date,
@@ -34,10 +39,21 @@ const bookingSchema = new mongoose.Schema({
     default: 'pending',
   },
   specialRequests: String,
+  contactNumber: String,
   createdAt: {
     type: Date,
     default: Date.now,
   },
+});
+
+bookingSchema.pre('save', function (next) {
+  if (!this.bookingReference) {
+    const shortId = this._id
+      ? this._id.toString().slice(-6).toUpperCase()
+      : Date.now().toString(36).toUpperCase();
+    this.bookingReference = `GT-${shortId}`;
+  }
+  next();
 });
 
 const Booking = mongoose.model('Booking', bookingSchema);

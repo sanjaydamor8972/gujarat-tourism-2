@@ -17,7 +17,8 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
   })
   const [loading, setLoading] = useState(false)
 
-  const totalPrice = place.pricePerPerson * formData.totalPeople
+  const pricePerPerson = place.pricePerPerson ?? place.price ?? 0
+  const totalPrice = pricePerPerson * formData.totalPeople
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -63,8 +64,8 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
             <div className="bg-primary-50 dark:bg-primary-900 p-4 rounded-lg">
               <h3 className="font-semibold mb-2">{place.title}</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">{place.location}</p>
-              <div className="mt-2 text-2xl font-bold text-primary-600">
-                ₹{place.pricePerPerson}
+              <div className="mt-2 text-2xl font-bold text-primary-600 dark:text-primary-400">
+                ₹{pricePerPerson}
                 <span className="text-sm font-normal">/person</span>
               </div>
             </div>
@@ -128,7 +129,7 @@ const BookingForm = ({ place, onClose, onSuccess }) => {
             <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
               <div className="flex justify-between mb-2">
                 <span>Price per person:</span>
-                <span>₹{place.pricePerPerson}</span>
+                <span>₹{pricePerPerson}</span>
               </div>
               <div className="flex justify-between mb-2">
                 <span>Number of people:</span>

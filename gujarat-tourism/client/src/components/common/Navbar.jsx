@@ -132,7 +132,7 @@ const Navbar = () => {
             <button onClick={toggleDarkMode} className="p-2">
               {darkMode ? <FiSun className="text-yellow-400" size={20} /> : <FiMoon size={20} />}
             </button>
-            <button onClick={() => setIsOpen(!isOpen)}>
+            <button onClick={() => setIsOpen(!isOpen)} className="text-gray-800 dark:text-gray-200">
               {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
             </button>
           </div>

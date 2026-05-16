@@ -46,11 +46,11 @@ const Profile = () => {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12">
       <div className="container-custom">
         <div className="max-w-4xl mx-auto">
-          {/* Profile Header - FIXED: changed bg-gradient-to-r to bg-linear-to-r */}
+          {/* Profile Header - FIXED: changed bg-gradient-to-r to bg-gradient-to-r */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-linear-to-r from-primary-600 to-secondary-600 rounded-2xl p-8 mb-8 text-white"
+            className="bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl p-8 mb-8 text-white"
           >
             <div className="flex flex-col md:flex-row items-center gap-6">
               <div className="relative">

@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import Place from './models/Place.js'
+import { imagesFor } from './utils/placeImageCatalog.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -11,200 +12,175 @@ dotenv.config({ path: path.join(__dirname, '.env') })
 
 const placesData = [
   {
-    title: "Statue of Unity",
-    description: "The Statue of Unity is the world's tallest statue, standing at 182 meters. It is dedicated to Sardar Vallabhbhai Patel, the Iron Man of India. Located near the Sardar Sarovar Dam, it offers breathtaking views of the surrounding valley and Narmada river.",
-    location: "Kevadia, Narmada District",
-    category: "Heritage",
-    images: [
-      "C:\\Users\\sanju\\OneDrive\\Documents\\Desktop\\GT DEEP SEEK\\gujarat-tourism\\client\\public\\images\\Interesting-Facts-about-Statue-of-Unity.jpg"
-    ],
+    title: 'Statue of Unity',
+    slug: 'statue-of-unity',
+    description:
+      "The Statue of Unity is the world's tallest statue, standing at 182 meters. It is dedicated to Sardar Vallabhbhai Patel, the Iron Man of India.",
+    shortDescription: "World's tallest statue dedicated to Sardar Patel.",
+    location: 'Kevadia, Narmada District',
+    district: 'Narmada',
+    category: 'heritage',
+    ...imagesFor('statue-of-unity'),
     rating: 4.8,
+    totalReviews: 1250,
     numReviews: 1250,
+    pricePerPerson: 500,
     price: 500,
     discountPrice: 450,
-    mapLocation: { lat: 21.8380, lng: 73.7191 },
-    bestTimeToVisit: "October to March",
-    howToReach: "By road from Vadodara (90 km) or Ahmedabad (200 km). Nearest railway station is Kevadia.",
-    openingHours: "8:00 AM - 6:00 PM daily",
-    contactInfo: "+91 1234567890",
-    isFeatured: true
+    mapLocation: { lat: 21.838, lng: 73.7191 },
+    bestTimeToVisit: 'October to March',
+    isFeatured: true,
+    isPopular: true,
   },
   {
-    title: "Gir National Park",
-    description: "The only place outside Africa where Asiatic lions can be seen in their natural habitat. Home to over 500 lions and numerous other wildlife species including leopards, deer, and crocodiles.",
-    location: "Junagadh District",
-    category: "Wildlife",
-    images: [
-      "https://images.unsplash.com/photo-1566577134774-4fa5a90f2a6b?w=800"
-    ],
+    title: 'Gir National Park',
+    slug: 'gir-national-park',
+    description:
+      'The only place outside Africa where Asiatic lions can be seen in their natural habitat.',
+    shortDescription: 'Home of the Asiatic lion.',
+    location: 'Junagadh District',
+    district: 'Junagadh',
+    category: 'wildlife',
+    ...imagesFor('gir-national-park'),
     rating: 4.7,
+    totalReviews: 890,
     numReviews: 890,
+    pricePerPerson: 800,
     price: 800,
-    discountPrice: 700,
     mapLocation: { lat: 21.1645, lng: 70.8028 },
-    bestTimeToVisit: "December to March",
-    howToReach: "Nearest airport: Keshod (65 km). Nearest railway: Junagadh (55 km).",
-    openingHours: "6:00 AM - 9:00 AM, 3:00 PM - 6:00 PM",
-    contactInfo: "+91 2877 285501",
-    isFeatured: true
+    isFeatured: true,
+    isPopular: true,
   },
   {
-    title: "Somnath Temple",
-    description: "One of the twelve Jyotirlinga shrines of Lord Shiva. The temple has been reconstructed several times and stands as a symbol of resilience and faith. Located at the shore of the Arabian Sea.",
-    location: "Prabhas Patan, Gir Somnath",
-    category: "Temple",
-    images: [
-      "https://images.unsplash.com/photo-1587925358603-c2eea5305bbc?w=800"
-    ],
+    title: 'Somnath Temple',
+    slug: 'somnath-temple',
+    description: 'One of the twelve Jyotirlinga shrines of Lord Shiva on the Arabian Sea coast.',
+    shortDescription: 'Sacred Jyotirlinga by the sea.',
+    location: 'Prabhas Patan, Gir Somnath',
+    district: 'Gir Somnath',
+    category: 'temple',
+    ...imagesFor('somnath-temple'),
     rating: 4.9,
+    totalReviews: 2100,
     numReviews: 2100,
+    pricePerPerson: 300,
     price: 300,
-    discountPrice: 250,
-    mapLocation: { lat: 20.8850, lng: 70.4007 },
-    bestTimeToVisit: "October to February",
-    howToReach: "Nearest airport: Diu (85 km). Nearest railway: Veraval (7 km).",
-    openingHours: "6:00 AM - 9:00 PM daily",
-    contactInfo: "+91 2876 233803",
-    isFeatured: true
+    mapLocation: { lat: 20.885, lng: 70.4007 },
+    isFeatured: true,
+    isPopular: false,
   },
   {
-    title: "Rann of Kutch",
-    description: "A seasonal salt desert that transforms into a white wonderland during the Rann Utsav festival. One of the largest salt deserts in the world, spanning over 7,500 square kilometers.",
-    location: "Kutch District",
-    category: "Heritage",
-    images: [
-      "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800"
-    ],
+    title: 'Rann of Kutch',
+    slug: 'rann-of-kutch',
+    description: 'A seasonal salt desert and white wonderland during the Rann Utsav festival.',
+    shortDescription: 'White desert festival destination.',
+    location: 'Kutch District',
+    district: 'Kutch',
+    category: 'heritage',
+    ...imagesFor('rann-of-kutch'),
     rating: 4.8,
+    totalReviews: 1500,
     numReviews: 1500,
+    pricePerPerson: 600,
     price: 600,
-    discountPrice: 550,
-    mapLocation: { lat: 23.8290, lng: 69.6994 },
-    bestTimeToVisit: "November to February",
-    howToReach: "Nearest airport: Bhuj (85 km). Regular buses from Bhuj.",
-    openingHours: "Sunrise to Sunset",
-    contactInfo: "+91 2832 234567",
-    isFeatured: true
+    mapLocation: { lat: 23.829, lng: 69.6994 },
+    isFeatured: true,
+    isPopular: true,
   },
   {
-    title: "Dwarkadhish Temple",
-    description: "An ancient temple dedicated to Lord Krishna, believed to be over 2500 years old. It's one of the Char Dham pilgrimage sites and features intricate carvings and architecture.",
-    location: "Dwarka, Devbhoomi Dwarka",
-    category: "Temple",
-    images: [
-      "https://images.unsplash.com/photo-1587925358603-c2eea5305bbc?w=800"
-    ],
+    title: 'Dwarkadhish Temple',
+    slug: 'dwarkadhish-temple',
+    description: 'Ancient temple dedicated to Lord Krishna, one of the Char Dham sites.',
+    shortDescription: 'Ancient Krishna temple in Dwarka.',
+    location: 'Dwarka, Devbhoomi Dwarka',
+    district: 'Dwarka',
+    category: 'temple',
+    ...imagesFor('dwarkadhish-temple'),
     rating: 4.9,
+    totalReviews: 1800,
     numReviews: 1800,
+    pricePerPerson: 250,
     price: 250,
-    discountPrice: 200,
     mapLocation: { lat: 22.2396, lng: 68.9678 },
-    bestTimeToVisit: "October to March",
-    howToReach: "Nearest airport: Jamnagar (137 km). Well connected by road and rail.",
-    openingHours: "6:30 AM - 1:00 PM, 5:00 PM - 9:00 PM",
-    contactInfo: "+91 2892 234567",
-    isFeatured: false
+    isFeatured: false,
+    isPopular: true,
   },
   {
-    title: "Sabarmati Ashram",
-    description: "Former home of Mahatma Gandhi, now a museum showcasing his life and the Indian independence movement. Located on the banks of Sabarmati River in Ahmedabad.",
-    location: "Ahmedabad",
-    category: "Heritage",
-    images: [
-      "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800"
-    ],
+    title: 'Sabarmati Ashram',
+    slug: 'sabarmati-ashram',
+    description: "Former home of Mahatma Gandhi, now a museum on the Sabarmati riverfront.",
+    shortDescription: "Gandhi's historic ashram in Ahmedabad.",
+    location: 'Ahmedabad',
+    district: 'Ahmedabad',
+    category: 'heritage',
+    ...imagesFor('sabarmati-ashram'),
     rating: 4.6,
+    totalReviews: 950,
     numReviews: 950,
+    pricePerPerson: 100,
     price: 100,
-    discountPrice: 80,
-    mapLocation: { lat: 23.0600, lng: 72.5800 },
-    bestTimeToVisit: "October to March",
-    howToReach: "Located in central Ahmedabad. Easily accessible by bus, auto, or taxi.",
-    openingHours: "8:30 AM - 6:30 PM daily",
-    contactInfo: "+91 79 27557277",
-    isFeatured: false
+    mapLocation: { lat: 23.06, lng: 72.58 },
+    isFeatured: false,
+    isPopular: false,
   },
   {
-    title: "Adalaj Stepwell",
-    description: "A magnificent five-story stepwell built in 1499, showcasing intricate Indian architecture and serving as a cool refuge during summer. Features exquisite carvings of geometric patterns and floral motifs.",
-    location: "Adalaj, Gandhinagar",
-    category: "Heritage",
-    images: [
-      "https://images.unsplash.com/photo-1587925358603-c2eea5305bbc?w=800"
-    ],
+    title: 'Adalaj Stepwell',
+    slug: 'adalaj-stepwell',
+    description: 'A magnificent five-story stepwell built in 1499 with intricate carvings.',
+    shortDescription: 'Historic stepwell near Ahmedabad.',
+    location: 'Adalaj, Gandhinagar',
+    district: 'Gandhinagar',
+    category: 'heritage',
+    ...imagesFor('adalaj-stepwell'),
     rating: 4.5,
+    totalReviews: 650,
     numReviews: 650,
+    pricePerPerson: 50,
     price: 50,
-    discountPrice: 40,
-    mapLocation: { lat: 23.1300, lng: 72.5800 },
-    bestTimeToVisit: "October to March",
-    howToReach: "15 km from Ahmedabad city center. Accessible by local buses and taxis.",
-    openingHours: "8:00 AM - 6:00 PM",
-    contactInfo: "+91 79 12345678",
-    isFeatured: false
+    mapLocation: { lat: 23.13, lng: 72.58 },
+    isFeatured: false,
+    isPopular: false,
   },
   {
-    title: "Saputara",
-    description: "The only hill station in Gujarat, located in the Dang district. Known for its scenic beauty, lush green forests, pleasant climate, and tribal culture. Perfect for nature lovers and adventure enthusiasts.",
-    location: "Saputara, Dang",
-    category: "Hill Station",
-    images: [
-      "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800"
-    ],
+    title: 'Saputara',
+    slug: 'saputara',
+    description: 'The only hill station in Gujarat, known for scenic beauty and tribal culture.',
+    shortDescription: "Gujarat's only hill station.",
+    location: 'Saputara, Dang',
+    district: 'Dang',
+    category: 'hill_station',
+    ...imagesFor('saputara'),
     rating: 4.4,
+    totalReviews: 520,
     numReviews: 520,
+    pricePerPerson: 700,
     price: 700,
-    discountPrice: 650,
-    mapLocation: { lat: 20.9500, lng: 73.7500 },
-    bestTimeToVisit: "June to February",
-    howToReach: "Nearest railway: Waghai (50 km). Regular buses from Surat (150 km).",
-    openingHours: "24 hours",
-    contactInfo: "+91 1234567890",
-    isFeatured: false
-  }
+    mapLocation: { lat: 20.95, lng: 73.75 },
+    isFeatured: false,
+    isPopular: true,
+  },
 ]
 
 async function seedDatabase() {
   try {
-    console.log('🔄 Connecting to MongoDB...')
+    console.log('Connecting to MongoDB...')
     await mongoose.connect(process.env.MONGO_URI)
-    console.log('✅ Connected to MongoDB successfully!')
-    
-    // Clear existing places
+    console.log('Connected to MongoDB')
+
     const deletedCount = await Place.deleteMany({})
-    console.log(`🗑️  Cleared ${deletedCount.deletedCount} existing places`)
-    
-    // Insert new places
+    console.log(`Cleared ${deletedCount.deletedCount} existing places`)
+
     const inserted = await Place.insertMany(placesData)
-    console.log(`\n✅ Successfully added ${inserted.length} places to database!\n`)
-    
-    console.log('📋 Added places:')
-    console.log('─'.repeat(60))
+    console.log(`Successfully added ${inserted.length} places`)
+
     inserted.forEach((place, index) => {
-      console.log(`${index + 1}. ${place.title}`)
-      console.log(`   📍 Location: ${place.location}`)
-      console.log(`   🏷️  Category: ${place.category}`)
-      console.log(`   💰 Price: ₹${place.price}/person`)
-      if (place.discountPrice) console.log(`   🎉 Discount: ₹${place.discountPrice}/person`)
-      console.log(`   ⭐ Rating: ${place.rating}/5 (${place.numReviews} reviews)`)
-      console.log('')
+      console.log(`${index + 1}. ${place.title} (${place.category})`)
     })
-    
-    console.log('─'.repeat(60))
-    console.log('🎉 Database seeding completed successfully!')
-    console.log('\n🌐 Visit http://localhost:5173/places to see your places!')
-    
   } catch (error) {
-    console.error('❌ Error seeding database:', error.message)
-    if (error.errors) {
-      console.log('\n📝 Validation errors:')
-      Object.keys(error.errors).forEach(key => {
-        console.log(`   - ${key}: ${error.errors[key].message}`)
-      })
-    }
+    console.error('Error seeding database:', error.message)
   } finally {
     await mongoose.disconnect()
-    console.log('🔌 Disconnected from MongoDB')
+    console.log('Disconnected from MongoDB')
   }
 }
 

@@ -6,6 +6,7 @@ import bookingService from '../services/bookingService'
 import Loader from '../components/common/Loader'
 import { toast } from 'react-hot-toast'
 import { Link } from 'react-router-dom'
+import PlaceImage from '../components/common/PlaceImage'
 
 const Bookings = () => {
   const [bookings, setBookings] = useState([])
@@ -56,7 +57,7 @@ const Bookings = () => {
       case 'completed':
         return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200'
       default:
-        return 'bg-gray-100 text-gray-800'
+        return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200'
     }
   }
 
@@ -120,8 +121,8 @@ const Bookings = () => {
                   <div className="flex flex-col md:flex-row">
                     {/* Image */}
                     <div className="md:w-48 h-48 md:h-auto">
-                      <img
-                        src={booking.place?.coverImage?.url || 'https://via.placeholder.com/200'}
+                      <PlaceImage
+                        place={booking.place}
                         alt={booking.place?.title}
                         className="w-full h-full object-cover"
                       />
@@ -139,7 +140,7 @@ const Bookings = () => {
                           <div className="flex flex-wrap gap-4 mt-3">
                             <div className="flex items-center gap-2 text-sm">
                               <FiCalendar />
-                              <span>{format(new Date(booking.travelDate), 'PPP')}</span>
+                              <span>{format(new Date(booking.travelDate || booking.visitDate), 'PPP')}</span>
                             </div>
                             <div className="flex items-center gap-2 text-sm">
                               <FiUsers />
@@ -157,7 +158,7 @@ const Bookings = () => {
                             {getStatusIcon(booking.status)}
                             <span className="capitalize">{booking.status}</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-2">
+                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
                             Booking ID: {booking.bookingReference}
                           </p>
                         </div>
@@ -167,7 +168,7 @@ const Bookings = () => {
                       <div className="flex gap-3 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
                         <button
                           onClick={() => setSelectedBooking(booking)}
-                          className="text-primary-600 hover:text-primary-700 text-sm font-semibold"
+                          className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-semibold"
                         >
                           View Details
                         </button>
@@ -217,39 +218,39 @@ const Bookings = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Booking Reference</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Booking Reference</span>
                     <span className="font-mono text-sm">{selectedBooking.bookingReference}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Travel Date</span>
-                    <span>{format(new Date(selectedBooking.travelDate), 'PPP')}</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Travel Date</span>
+                    <span>{format(new Date(selectedBooking.travelDate || selectedBooking.visitDate), 'PPP')}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Booking Date</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Booking Date</span>
                     <span>{format(new Date(selectedBooking.createdAt), 'PPP')}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Number of People</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Number of People</span>
                     <span>{selectedBooking.totalPeople}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Price per Person</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Price per Person</span>
                     <span>₹{selectedBooking.place?.pricePerPerson}</span>
                   </div>
                   <div className="flex justify-between py-2 border-b font-bold">
-                    <span className="text-gray-600">Total Amount</span>
-                    <span className="text-primary-600">₹{selectedBooking.totalPrice}</span>
+                    <span className="text-gray-600 dark:text-gray-400">Total Amount</span>
+                    <span className="text-primary-600 dark:text-primary-400">₹{selectedBooking.totalPrice}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b">
-                    <span className="text-gray-600">Status</span>
+                  <div className="flex justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+                    <span className="text-gray-600 dark:text-gray-400">Status</span>
                     <span className={`capitalize ${getStatusColor(selectedBooking.status)} px-2 py-1 rounded-full text-xs`}>
                       {selectedBooking.status}
                     </span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-gray-600">Payment Status</span>
-                    <span className={`capitalize ${selectedBooking.paymentStatus === 'paid' ? 'text-green-600' : 'text-yellow-600'}`}>
+                    <span className="text-gray-600 dark:text-gray-400">Payment Status</span>
+                    <span className={`capitalize ${selectedBooking.paymentStatus === 'paid' ? 'text-green-600 dark:text-green-400' : 'text-yellow-600 dark:text-yellow-400'}`}>
                       {selectedBooking.paymentStatus}
                     </span>
                   </div>
