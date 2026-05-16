@@ -12,11 +12,14 @@ const getPlaces = async (req, res) => {
     let query = {};
 
     if (req.query.search) {
+      const searchRegex = { $regex: req.query.search, $options: 'i' };
       query.$or = [
-        { title: { $regex: req.query.search, $options: 'i' } },
-        { description: { $regex: req.query.search, $options: 'i' } },
-        { location: { $regex: req.query.search, $options: 'i' } },
-        { shortDescription: { $regex: req.query.search, $options: 'i' } },
+        { title: searchRegex },
+        { description: searchRegex },
+        { location: searchRegex },
+        { shortDescription: searchRegex },
+        { district: searchRegex },
+        { nearbyAttractions: searchRegex },
       ];
     }
 
@@ -102,6 +105,8 @@ const createPlace = async (req, res) => {
       entryFee,
       mapLocation,
       nearbyAttractions,
+      isFeatured,
+      isPopular,
     } = req.body;
 
     const price = Number(pricePerPerson) || 0;
@@ -125,6 +130,8 @@ const createPlace = async (req, res) => {
       entryFee: entryFee || 'Free',
       mapLocation: mapLocation || { lat: 23.0225, lng: 72.5714 },
       nearbyAttractions: nearbyAttractions || [],
+      isFeatured: isFeatured === true || isFeatured === 'true',
+      isPopular: isPopular === true || isPopular === 'true',
       coverImage: defaultCover,
       images: [defaultCover],
     });
@@ -165,8 +172,12 @@ const updatePlace = async (req, res) => {
       place.pricePerPerson = req.body.pricePerPerson;
       place.price = req.body.pricePerPerson;
     }
-    if (req.body.isPopular !== undefined) place.isPopular = req.body.isPopular;
-    if (req.body.isFeatured !== undefined) place.isFeatured = req.body.isFeatured;
+    if (req.body.isPopular !== undefined) {
+      place.isPopular = req.body.isPopular === true || req.body.isPopular === 'true';
+    }
+    if (req.body.isFeatured !== undefined) {
+      place.isFeatured = req.body.isFeatured === true || req.body.isFeatured === 'true';
+    }
 
     const updatedPlace = await place.save();
     res.json(normalizePlace(updatedPlace));
@@ -255,15 +266,38 @@ const deletePlaceImage = async (req, res) => {
       return res.status(404).json({ message: 'Place not found' });
     }
 
-    const imageIndex = place.images.findIndex(
-      (img) => img._id.toString() === req.params.imageId
+    let imageIndex = place.images.findIndex(
+      (img) => img._id && img._id.toString() === req.params.imageId
     );
 
-    if (imageIndex === -1) {
+    if (imageIndex === -1 && /^\d+$/.test(req.params.imageId)) {
+      imageIndex = parseInt(req.params.imageId, 10);
+    }
+
+    if (imageIndex < 0 || imageIndex >= place.images.length) {
       return res.status(404).json({ message: 'Image not found' });
     }
 
+    const removed = place.images[imageIndex];
+    const removedUrl = typeof removed === 'string' ? removed : removed?.url || '';
+
     place.images.splice(imageIndex, 1);
+
+    if (place.images.length === 0) {
+      const defaultCover = {
+        url: 'https://images.unsplash.com/photo-1631983097767-099c77bf880d?fm=jpg&q=60&w=1200&auto=format&fit=crop',
+        publicId: 'placeholder',
+        caption: '',
+      };
+      place.images = [defaultCover];
+      place.coverImage = defaultCover;
+    } else {
+      const coverUrl = place.coverImage?.url || '';
+      if (!coverUrl || coverUrl === removedUrl || coverUrl.includes('placeholder')) {
+        place.coverImage = place.images[0];
+      }
+    }
+
     await place.save();
 
     res.json({ message: 'Image deleted successfully', place: normalizePlace(place) });

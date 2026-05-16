@@ -9,6 +9,7 @@ import Sidebar from '../../components/dashboard/Sidebar'
 import DashboardCard from '../../components/dashboard/DashboardCard'
 import Loader from '../../components/common/Loader'
 import api from '../../services/api'
+import toast from 'react-hot-toast'
 
 const AdminDashboard = () => {
   const [stats, setStats] = useState(null)
@@ -29,6 +30,7 @@ const AdminDashboard = () => {
       setAnalytics(analyticsRes.data)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
+      toast.error('Could not load dashboard data. Is the server running?')
     } finally {
       setLoading(false)
     }

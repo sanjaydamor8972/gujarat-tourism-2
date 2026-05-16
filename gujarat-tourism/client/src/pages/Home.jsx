@@ -3,11 +3,12 @@ import { motion } from 'framer-motion'
 import { Swiper, SwiperSlide } from 'swiper/react'
 import { Autoplay, Pagination, Navigation } from 'swiper/modules'
 import { FiSearch, FiMapPin, FiCamera, FiUsers, FiAward, FiHeart } from 'react-icons/fi'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { CATEGORIES } from '../utils/constants'
 import PlaceCard from '../components/places/PlaceCard'
 import Loader from '../components/common/Loader'
 import placeService from '../services/placeService'
-import { getDemoFeaturedPlaces, getDemoPopularPlaces } from '../data/demoPlaces'
+import { getOfflineFeaturedPlaces, getOfflinePopularPlaces } from '../utils/placesCache'
 import { PLACE_IMAGE_CATALOG } from '../data/placeImageCatalog'
 import toast from 'react-hot-toast'
 
@@ -16,10 +17,26 @@ import 'swiper/css'
 import 'swiper/css/pagination'
 import 'swiper/css/navigation'
 
+const HOME_DISTRICTS = ['Kutch', 'Ahmedabad', 'Vadodara', 'Surat', 'Rajkot', 'Junagadh', 'Gandhinagar', 'Gir Somnath']
+
 const Home = () => {
+  const navigate = useNavigate()
   const [featuredPlaces, setFeaturedPlaces] = useState([])
   const [popularPlaces, setPopularPlaces] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchDistrict, setSearchDistrict] = useState('')
+  const [searchCategory, setSearchCategory] = useState('')
+
+  function handleHeroSearch(e) {
+    e.preventDefault()
+    const params = new URLSearchParams()
+    if (searchQuery.trim()) params.set('search', searchQuery.trim())
+    if (searchDistrict) params.set('district', searchDistrict)
+    if (searchCategory) params.set('category', searchCategory)
+    const query = params.toString()
+    navigate(query ? `/places?${query}` : '/places')
+  }
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,9 +49,9 @@ const Home = () => {
         setPopularPlaces(popular)
       } catch (error) {
         console.error('Error fetching data:', error)
-        setFeaturedPlaces(getDemoFeaturedPlaces())
-        setPopularPlaces(getDemoPopularPlaces())
-        toast('Showing sample destinations — server unavailable', { icon: 'ℹ️' })
+        setFeaturedPlaces(getOfflineFeaturedPlaces())
+        setPopularPlaces(getOfflinePopularPlaces())
+        toast('Showing saved destinations — server unavailable', { icon: 'ℹ️' })
       } finally {
         setLoading(false)
       }
@@ -116,41 +133,53 @@ const Home = () => {
 
       {/* Search Section */}
       <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg -mt-16 relative z-10 mx-4 md:mx-auto max-w-4xl">
-        <div className="p-6">
+        <form onSubmit={handleHeroSearch} className="p-6">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="flex-1">
               <input
-                type="text"
+                type="search"
                 placeholder="Search tourist places..."
-                className="input-field"
+                className="input-field w-full"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                aria-label="Search tourist places"
               />
             </div>
             <div className="flex-1">
-              <select className="input-field">
-                <option value="">Select District</option>
-                <option value="kutch">Kutch</option>
-                <option value="ahmedabad">Ahmedabad</option>
-                <option value="vadodara">Vadodara</option>
-                <option value="surat">Surat</option>
-                <option value="rajkot">Rajkot</option>
-                <option value="junagadh">Junagadh</option>
+              <select
+                className="input-field w-full"
+                value={searchDistrict}
+                onChange={(e) => setSearchDistrict(e.target.value)}
+                aria-label="Filter by district"
+              >
+                <option value="">All districts</option>
+                {HOME_DISTRICTS.map((d) => (
+                  <option key={d} value={d}>
+                    {d}
+                  </option>
+                ))}
               </select>
             </div>
             <div className="flex-1">
-              <select className="input-field">
-                <option value="">Select Category</option>
-                <option value="temple">Temples</option>
-                <option value="nature">Nature</option>
-                <option value="heritage">Heritage</option>
-                <option value="wildlife">Wildlife</option>
-                <option value="beach">Beaches</option>
+              <select
+                className="input-field w-full"
+                value={searchCategory}
+                onChange={(e) => setSearchCategory(e.target.value)}
+                aria-label="Filter by category"
+              >
+                <option value="">All categories</option>
+                {CATEGORIES.map((c) => (
+                  <option key={c.value} value={c.value}>
+                    {c.label}
+                  </option>
+                ))}
               </select>
             </div>
-            <button className="btn-primary flex items-center justify-center gap-2">
+            <button type="submit" className="btn-primary flex items-center justify-center gap-2 px-6">
               <FiSearch /> Search
             </button>
           </div>
-        </div>
+        </form>
       </div>
 
       {/* Stats Section */}

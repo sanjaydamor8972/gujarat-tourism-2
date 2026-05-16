@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
 import { getPlaceGallery } from '../utils/placeImages'
 import PlaceImage from '../components/common/PlaceImage'
+import { getOfflinePlaceById } from '../utils/placesCache'
 
 const PlacePage = () => {
   const { id } = useParams()
@@ -49,8 +50,15 @@ const PlacePage = () => {
       setReviews(Array.isArray(reviewsData) ? reviewsData : reviewsData.reviews || [])
     } catch (error) {
       console.error('Error fetching place data:', error)
-      toast.error('Failed to load place details')
-      navigate('/places')
+      const cached = getOfflinePlaceById(id)
+      if (cached) {
+        setPlace(cached)
+        setReviews([])
+        toast('Showing saved place — server unavailable', { icon: 'ℹ️' })
+      } else {
+        toast.error('Failed to load place details')
+        navigate('/places')
+      }
     } finally {
       setLoading(false)
     }
@@ -93,6 +101,20 @@ const PlacePage = () => {
 
   const gallery = getPlaceGallery(place)
   const mapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
+
+  async function handleShare() {
+    const url = window.location.href
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: place.title, text: place.shortDescription || place.title, url })
+        return
+      }
+      await navigator.clipboard.writeText(url)
+      toast.success('Link copied to clipboard')
+    } catch {
+      toast.error('Could not share this place')
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -203,7 +225,11 @@ const PlacePage = () => {
                 >
                   Book Now
                 </button>
-                <button className="btn-outline w-full flex items-center justify-center gap-2">
+                <button
+                  type="button"
+                  onClick={handleShare}
+                  className="btn-outline w-full flex items-center justify-center gap-2"
+                >
                   <FiShare2 /> Share
                 </button>
               </div>

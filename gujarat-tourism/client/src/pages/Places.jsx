@@ -1,30 +1,53 @@
 import React, { useState, useEffect, useCallback } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import PlaceCard from '../components/places/PlaceCard'
 import Loader from '../components/common/Loader'
 import placeService from '../services/placeService'
 import useDebounce from '../hooks/useDebounce'
 import { CATEGORIES, DISTRICTS } from '../utils/constants'
-import { getDemoPlacesList } from '../data/demoPlaces'
+import {
+  getMergedOfflinePlaces,
+  filterCachedPlaces,
+  paginatePlaces,
+} from '../utils/placesCache'
 import toast from 'react-hot-toast'
 import { FiSearch, FiFilter, FiGrid, FiList, FiX } from 'react-icons/fi'
 
 function Places() {
+  const [searchParams] = useSearchParams()
   const [places, setPlaces] = useState([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedDistrict, setSelectedDistrict] = useState('all')
+  const [searchTerm, setSearchTerm] = useState(() => searchParams.get('search') || '')
+  const [activeSearch, setActiveSearch] = useState(() => searchParams.get('search') || '')
+  const [selectedCategory, setSelectedCategory] = useState(() => searchParams.get('category') || 'all')
+  const [selectedDistrict, setSelectedDistrict] = useState(() => searchParams.get('district') || 'all')
   const [sortBy, setSortBy] = useState('newest')
   const [currentPage, setCurrentPage] = useState(1)
   const [totalPages, setTotalPages] = useState(1)
+  const [totalCount, setTotalCount] = useState(0)
   const [viewMode, setViewMode] = useState('grid')
   const [showFilters, setShowFilters] = useState(false)
 
-  const debouncedSearch = useDebounce(searchTerm, 500)
+  const debouncedSearch = useDebounce(searchTerm, 400)
+
+  useEffect(() => {
+    setActiveSearch(debouncedSearch.trim())
+  }, [debouncedSearch])
+
+  useEffect(() => {
+    const q = searchParams.get('search') || ''
+    const cat = searchParams.get('category') || 'all'
+    const dist = searchParams.get('district') || 'all'
+    setSearchTerm(q)
+    setActiveSearch(q)
+    setSelectedCategory(cat)
+    setSelectedDistrict(dist)
+    setCurrentPage(1)
+  }, [searchParams])
 
   const categories = ['all', ...CATEGORIES.map((c) => c.value)]
-  const districts = ['all', ...DISTRICTS.slice(0, 12)]
+  const districts = ['all', ...DISTRICTS]
 
   const fetchPlaces = useCallback(async () => {
     setLoading(true)
@@ -35,20 +58,29 @@ function Places() {
         sort: sortBy,
         category: selectedCategory,
         district: selectedDistrict,
-        search: debouncedSearch,
+        search: activeSearch,
       }
       const data = await placeService.getPlaces(params)
       setPlaces(data.places)
       setTotalPages(data.totalPages)
+      setTotalCount(data.total ?? data.places.length)
     } catch (error) {
       console.error('Error fetching places:', error)
-      setPlaces(getDemoPlacesList())
-      setTotalPages(1)
-      toast('Showing sample places — server unavailable', { icon: 'ℹ️' })
+      const offline = filterCachedPlaces(getMergedOfflinePlaces(), {
+        search: activeSearch,
+        category: selectedCategory,
+        district: selectedDistrict,
+        sort: sortBy,
+      })
+      const paged = paginatePlaces(offline, currentPage, 9)
+      setPlaces(paged.places)
+      setTotalPages(paged.totalPages)
+      setTotalCount(paged.total)
+      toast('Showing saved places — server unavailable', { icon: 'ℹ️' })
     } finally {
       setLoading(false)
     }
-  }, [currentPage, selectedCategory, selectedDistrict, sortBy, debouncedSearch])
+  }, [currentPage, selectedCategory, selectedDistrict, sortBy, activeSearch])
 
   useEffect(() => {
     fetchPlaces()
@@ -56,8 +88,9 @@ function Places() {
 
   function handleSearch(e) {
     e.preventDefault()
+    const query = searchTerm.trim()
+    setActiveSearch(query)
     setCurrentPage(1)
-    fetchPlaces()
   }
 
   function clearFilters() {
@@ -65,6 +98,7 @@ function Places() {
     setSelectedDistrict('all')
     setSortBy('newest')
     setSearchTerm('')
+    setActiveSearch('')
     setCurrentPage(1)
   }
 
@@ -184,7 +218,13 @@ function Places() {
         </div>
 
         <div className="flex justify-between items-center mb-6">
-          <p className="text-gray-600 dark:text-gray-400">Found {places.length} places</p>
+          <p className="text-gray-600 dark:text-gray-400">
+            {activeSearch ? (
+              <>Found {totalCount} place{totalCount === 1 ? '' : 's'} for &ldquo;{activeSearch}&rdquo;</>
+            ) : (
+              <>Found {totalCount} place{totalCount === 1 ? '' : 's'}</>
+            )}
+          </p>
           <div className="flex gap-2">
             <button
               type="button"

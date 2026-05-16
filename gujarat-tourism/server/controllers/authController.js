@@ -36,6 +36,10 @@ export const loginUser = async (req, res) => {
 
     const user = await User.findOne({ email });
 
+    if (user && user.isBanned) {
+      return res.status(403).json({ message: 'Your account has been banned. Contact support.' });
+    }
+
     if (user && (await user.matchPassword(password))) {
       res.json({
         _id: user._id,
