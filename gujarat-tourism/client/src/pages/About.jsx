@@ -39,20 +39,14 @@ const About = () => {
     {
       name: 'Sanjay Damor',
       role: 'Developer',
-      image: 'https://randomuser.me/api/portraits/men/1.jpg',
+      image: 'gujarat-tourism-2/gujarat-tourism/server/uploads/1778952229438-rani-ni-vaav.png',
       bio: '1 year in tourism industry'
     },
     {
       name: 'Akash chauhan',
       role: 'Developer',
-      image: 'https://randomuser.me/api/portraits/women/2.jpg',
+      image: 'gujarat-tourism-2/gujarat-tourism/server/uploads/1778952229438-rani-ni-vaav.png',
       bio: 'Expert in cultural tourism'
-    },
-    {
-      name: 'Ansh Tripathi',
-      role: 'Operations Head',
-      image: 'https://randomuser.me/api/portraits/men/3.jpg',
-      bio: 'Ensuring smooth travel experiences'
     }
 
   ]
