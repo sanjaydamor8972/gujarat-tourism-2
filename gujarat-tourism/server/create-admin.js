@@ -1,15 +1,18 @@
-import mongoose from 'mongoose'
-import dotenv from 'dotenv'
-import User from './models/User.js'
-import bcrypt from 'bcryptjs'
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import User from './models/User.js';
+import connectDB from './config/db.js';
 
-dotenv.config()
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+dotenv.config({ path: path.join(__dirname, '.env') });
+dotenv.config({ path: path.join(__dirname, '.env.local'), override: true });
 
 async function createAdmin() {
   try {
-    await mongoose.connect(process.env.MONGO_URI)
-    console.log('Connected to MongoDB')
-    
+    await connectDB();    
     // Check if admin exists
     const existingAdmin = await User.findOne({ email: 'admin@gujarattourism.com' })
     
@@ -32,10 +35,10 @@ async function createAdmin() {
     console.log('🔑 Password: admin123')
     
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error:', error.message);
+    process.exit(1);
   } finally {
-    await mongoose.disconnect()
+    await mongoose.disconnect();
   }
 }
-
 createAdmin()
